@@ -570,7 +570,8 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "httpx", specifier = ">=0.27,<1" },
-    { name = "pydantic", specifier = ">=2.7,<3" },
+    { name = "pydantic", marker = "python_full_version < '3.14'", specifier = ">=2.10,<3" },
+    { name = "pydantic", marker = "python_full_version >= '3.14'", specifier = ">=2.12,<3" },
     { name = "typing-extensions", specifier = ">=4.12" },
 ]
 
