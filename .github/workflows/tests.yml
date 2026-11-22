@@ -1,0 +1,46 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    name: Ruff, mypy and generated code
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: '3.14'
+      - run: uv sync --locked
+      - run: uv run ruff check src tests scripts
+      - run: uv run ruff format --check src tests scripts
+      - run: uv run mypy src
+      - name: Sync client matches the async source
+        run: uv run python scripts/unasync.py --check
+      - name: Models match the bundled spec
+        run: |
+          uv run python scripts/generate.py
+          git diff --exit-code src/mopux/models/_generated.py
+
+  tests:
+    runs-on: ubuntu-latest
+    name: Python ${{ matrix.python }}
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.11', '3.12', '3.13', '3.14']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: ${{ matrix.python }}
+      - run: uv sync --locked
+      - run: uv run pytest
+      - name: Lowest supported httpx and pydantic
+        run: uv run --resolution lowest-direct --isolated --with pytest --with pytest-asyncio --with pyyaml pytest -p no:cacheprovider
