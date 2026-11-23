@@ -1,0 +1,23 @@
+{
+    "algorithm": "HMAC-SHA256 over \"{timestamp}.{raw body}\"; header X-Mopux-Signature: t={timestamp},v1={hex}",
+    "vectors": [
+        {
+            "secret": "whsec_test_secret_1",
+            "timestamp": 1763900000,
+            "body": "{\"id\":\"00000000-0000-4000-8000-000000000001\",\"event\":\"ping\",\"data\":{\"message\":\"Mopux webhook test\"}}",
+            "signature": "t=1763900000,v1=0b2aac24a13ebe95fa4c7a1a936ce2173c38a146557a9538c4c1abc8b11af2df"
+        },
+        {
+            "secret": "whsec_dGhpcy1pcy1hLTMyLWJ5dGUtdGVzdC1zZWNyZXQtISE",
+            "timestamp": 1763900300,
+            "body": "{\"event\":\"task.completed\",\"data\":{\"task\":{\"id\":42,\"title\":\"Tarea con acentos: añadir camión €\"}}}",
+            "signature": "t=1763900300,v1=3655a5ace540c5ef71f58713a9814ea2da5e685cc1604c305f90ba4669e5f965"
+        },
+        {
+            "secret": "whsec_empty_body",
+            "timestamp": 1763900600,
+            "body": "",
+            "signature": "t=1763900600,v1=a6d28ef8132c5a5b368d8802a205f32dc7095dd62697aa8d6ca79b18b6db8a6c"
+        }
+    ]
+}

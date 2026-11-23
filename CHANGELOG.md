@@ -2,6 +2,10 @@
 
 All notable changes to `mopux` are documented here. The project follows [Semantic Versioning](https://semver.org/).
 
+## Unreleased
+
+- Verify incoming Mopux webhooks and parse signed events with typed access to task details and event data.
+
 ## 0.1.0 - 2026-11-22
 
 First release.

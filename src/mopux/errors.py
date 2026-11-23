@@ -15,6 +15,14 @@ class MopuxError(Exception):
     """Base class of every error raised by the SDK."""
 
 
+class InvalidWebhookSignatureError(MopuxError):
+    """The webhook signature is missing, malformed, expired or incorrect."""
+
+
+class InvalidWebhookPayloadError(MopuxError):
+    """The signed webhook has an invalid envelope, delivery header or data field."""
+
+
 class MopuxConnectionError(MopuxError):
     """The request never got an HTTP response (DNS, TLS, timeout, connection reset…)."""
 

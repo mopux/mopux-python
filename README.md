@@ -174,6 +174,75 @@ Mopux(url, token, retry=RetryPolicy.none())
 
 Other options: `timeout` (seconds, default 30), `user_agent` (appended to the SDK one), `headers` and `http_client` (your own `httpx.Client` / `httpx.AsyncClient`, e.g. for proxies or custom certificates).
 
+## Recibir webhooks
+
+Configura `MOPUX_WEBHOOK_SECRET` con el secreto del endpoint. Pasa a
+`parse_webhook_event` los bytes originales del POST y sus cabeceras. El SDK
+comprueba la firma y aplica una tolerancia de 300 segundos antes de leer el JSON.
+
+### FastAPI
+
+```python
+import os
+
+from fastapi import FastAPI, Request, Response
+from mopux import InvalidWebhookPayloadError, InvalidWebhookSignatureError, parse_webhook_event
+
+app = FastAPI()
+secret = os.environ["MOPUX_WEBHOOK_SECRET"]
+
+
+@app.post("/webhooks/mopux")
+async def receive(request: Request) -> Response:
+    try:
+        event = parse_webhook_event(await request.body(), request.headers, secret)
+    except InvalidWebhookSignatureError:
+        return Response(status_code=401)
+    except InvalidWebhookPayloadError:
+        return Response(status_code=400)
+
+    # Registra event.delivery_id y encola el trabajo una sola vez por entrega.
+    return Response(status_code=204)
+```
+
+### Flask
+
+```python
+import os
+
+from flask import Flask, request
+from mopux import InvalidWebhookPayloadError, InvalidWebhookSignatureError, parse_webhook_event
+
+app = Flask(__name__)
+secret = os.environ["MOPUX_WEBHOOK_SECRET"]
+
+
+@app.post("/webhooks/mopux")
+def receive():
+    try:
+        event = parse_webhook_event(request.get_data(), request.headers, secret)
+    except InvalidWebhookSignatureError:
+        return "", 401
+    except InvalidWebhookPayloadError:
+        return "", 400
+
+    # Registra event.delivery_id y encola el trabajo una sola vez por entrega.
+    return "", 204
+```
+
+`event.event` es un `WebhookEventType` para eventos conocidos y una cadena para
+eventos nuevos. `event.task` devuelve un `TaskDetail` cuando hay una tarea completa.
+Para una tarea borrada devuelve `None` y el objeto reducido queda en
+`event.data["task"]`. También puedes consultar `event.previous_status`,
+`event.changes`, `event.assigned_user_ids`, `event.previous_project_id` y
+`event.previous_group_id`.
+
+Usa `event.delivery_id` como clave de idempotencia. Los reintentos mantienen
+ese identificador. Un reenvío manual genera un identificador de entrega nuevo
+y conserva `event.id`. Responde con un 2xx tras registrar la entrega y encolar
+el trabajo. Si solo necesitas validar la firma, llama a
+`verify_webhook_signature(raw_body, signature_header, secret)`.
+
 ## Testing
 
 ```python

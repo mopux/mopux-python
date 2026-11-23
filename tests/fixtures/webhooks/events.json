@@ -1,0 +1,19 @@
+{
+    "envelope": {
+        "id": "00000000-0000-4000-8000-000000000001",
+        "occurred_at": "2026-11-23T12:30:00.123456Z",
+        "installation": "acme.mopux.com",
+        "actor": {"id": 8, "name": "Ada", "via": "api"}
+    },
+    "events": {
+        "task.created": {},
+        "task.completed": {"previous_status": 2},
+        "task.status_changed": {"previous_status": null},
+        "task.assigned": {"assigned_user_ids": [8, 9]},
+        "task.updated": {"changes": {"title": {"old": "Before", "new": "After"}, "date_end": {"old": null, "new": "2026-11-24"}, "tags": {"old": [], "new": ["urgent"]}}},
+        "task.moved": {"previous_project_id": 10, "previous_group_id": null},
+        "task.deleted": {"task": {"id": null, "title": null, "project": {"id": 10, "title": "Project"}, "group": null, "deleted": true}},
+        "ping": {"message": "Mopux webhook test"},
+        "project.created": {"project": {"id": 10, "title": "Project"}}
+    }
+}
