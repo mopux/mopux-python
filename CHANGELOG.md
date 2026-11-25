@@ -4,6 +4,10 @@ All notable changes to `mopux` are documented here. The project follows [Semanti
 
 ## Unreleased
 
+## 0.2.0 - 2026-11-25
+
+Targets Mopux API 1.3.0 (Mopux 1.14.0).
+
 - Verify incoming Mopux webhooks and parse signed events with typed access to task details and event data.
 
 ## 0.1.0 - 2026-11-22
